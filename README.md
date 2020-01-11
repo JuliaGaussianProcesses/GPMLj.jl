@@ -1,4 +1,7 @@
 # GPJ.jl
+
+[![Build Status](https://travis-ci.com/TuringLang/GPJ.jl.svg?branch=master)](https://travis-ci.org/TuringLang/GPJ.jl)
+
 A GP library in Julia
 
 ## Plan
