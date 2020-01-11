@@ -13,6 +13,7 @@ To use GPJ.jl, you need to install Julia first and then install GPJ.jl.
 The following will install the latest version of GPJ.jl while inside Julia’s package manager (press `]` from the REPL):
 ```julia
     add https://github.com/TuringLang/GPJ.jl/
+    build GPJ   # this should install the GPFlow python package and its dependencies.
 ```
 
 ## Plan
