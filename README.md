@@ -2,7 +2,18 @@
 
 [![Build Status](https://travis-ci.com/TuringLang/GPJ.jl.svg?branch=master)](https://travis-ci.org/TuringLang/GPJ.jl)
 
-A GP library in Julia
+A GP library in Julia.
+
+Currently this package interfaces with [GPFlow](https://github.com/GPflow/GPflow).
+
+## Getting Started
+
+To use GPJ.jl, you need to install Julia first and then install GPJ.jl.
+
+The following will install the latest version of GPJ.jl while inside Julia’s package manager (press `]` from the REPL):
+```julia
+    add https://github.com/TuringLang/GPJ.jl/
+```
 
 ## Plan
 
