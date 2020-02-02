@@ -1,6 +1,6 @@
 module GPJ
 
-using PyCall
+using PyCall, Distances
 
 export
     gpflow,
@@ -19,6 +19,19 @@ function minimize!(opt, m) end
 function predict_f(m, Xnew) end
 function predict_f_samples(m, Xnew, num_samples) end
 
+function elementwise end
+
+const pw = pairwise
+const ew = elementwise
+
+# Load necessary utilities
+include(joinpath("utils", "abstract_data_set.jl"))
+
+
+include("kernels.jl")
+
+# Load the GPFlow Interface
 include("gpflow.jl")
+
 
 end # module
