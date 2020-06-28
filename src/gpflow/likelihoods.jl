@@ -14,7 +14,7 @@ export
     Ordinal,
     Poisson,
     RobustMax,
-    SoftMax,
+    Softmax,
     StudentT,
     SwitchedLikelihood,
     instantiate!
@@ -155,35 +155,9 @@ function GaussianMC()
 end
 
 mutable struct Likelihood<:AbstractLikelihood
+    latent_dim
+    observation_dim
     o::Union{PyObject, Nothing}
-end
-
-function Likelihood()
-    out = Likelihood(nothing)
-    instantiate!(out)
-    return out
-end
-
-function instantiate!(o::Union{Likelihood, Nothing})
-    if o === nothing return nothing end
-    if typeof(o.o)<:PyObject return o.o end
-    o.o = py_gpflow.likelihoods.Likelihood()
-end
-
-mutable struct MonteCarloLikelihood<:AbstractLikelihood
-    o::Union{PyObject, Nothing}
-end
-
-function MonteCarloLikelihood()
-    out = MonteCarloLikelihood(nothing)
-    instantiate!(out)
-    return out
-end
-
-function instantiate!(o::Union{MonteCarloLikelihood, Nothing})
-    if o === nothing return nothing end
-    if typeof(o.o)<:PyObject return o.o end
-    o.o = py_gpflow.likelihoods.MonteCarloLikelihood()
 end
 
 mutable struct MultiClass<:AbstractLikelihood
@@ -310,21 +284,21 @@ end
 """
     The soft-max multi-class likelihood.
 """
-mutable struct SoftMax<:AbstractLikelihood
+mutable struct Softmax<:AbstractLikelihood
     num_classes::Integer
     o::Union{PyObject, Nothing}
 end
 
-function SoftMax(num_classes::Integer)
-    out = SoftMax(num_classes, nothing)
+function Softmax(num_classes::Integer)
+    out = Softmax(num_classes, nothing)
     instantiate!(out)
     return out
 end
 
-function instantiate!(o::Union{SoftMax, Nothing})
+function instantiate!(o::Union{Softmax, Nothing})
     if o === nothing return nothing end
     if typeof(o.o)<:PyObject return o.o end
-    o.o = py_gpflow.likelihoods.SoftMax(o.num_classes)
+    o.o = py_gpflow.likelihoods.Softmax(o.num_classes)
 end
 
 mutable struct StudentT{T1,T2}<:AbstractLikelihood where {T1 <: Real, T2 <: Real}

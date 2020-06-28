@@ -53,24 +53,6 @@ Random.seed!(123)
         @test_throws "GaussianMC not implemented" gpflow.likelihoods.GaussianMC()
     end
 
-    @testset "Likelihood" begin
-        likelihood = gpflow.likelihoods.Likelihood()
-        @test typeof(likelihood)<:gpflow.AbstractLikelihood
-        @test typeof(likelihood)<:gpflow.likelihoods.Likelihood
-        @test typeof(likelihood.o)<:PyObject
-        temp = likelihood.o
-        @test instantiate!(likelihood) == temp
-    end
-
-    @testset "MonteCarloLikelihood" begin
-        likelihood = gpflow.likelihoods.MonteCarloLikelihood()
-        @test typeof(likelihood)<:gpflow.AbstractLikelihood
-        @test typeof(likelihood)<:gpflow.likelihoods.MonteCarloLikelihood
-        @test typeof(likelihood.o)<:PyObject
-        temp = likelihood.o
-        @test instantiate!(likelihood) == temp
-    end
-
     @testset "MultiClass" begin
         likelihood = gpflow.likelihoods.MultiClass(3)
         @test typeof(likelihood)<:gpflow.AbstractLikelihood
@@ -107,10 +89,10 @@ Random.seed!(123)
         @test instantiate!(likelihood) == temp
     end
 
-    @testset "SoftMax" begin
-        likelihood = gpflow.likelihoods.SoftMax(3)
+    @testset "Softmax" begin
+        likelihood = gpflow.likelihoods.Softmax(3)
         @test typeof(likelihood)<:gpflow.AbstractLikelihood
-        @test typeof(likelihood)<:gpflow.likelihoods.SoftMax
+        @test typeof(likelihood)<:gpflow.likelihoods.Softmax
         @test typeof(likelihood.o)<:PyObject
         temp = likelihood.o
         @test instantiate!(likelihood) == temp

@@ -542,24 +542,20 @@ end
     σ² is the variance parameter
 """
 mutable struct Matern12 <: AbstractStationary
-    input_dim
     variance
     lengthscales
     active_dims
-    ARD
     name::Union{String, Nothing}
     o::Union{PyObject, Nothing}
 end
 
 function Matern12(
-    input_dim;
     variance=1.0,
     lengthscales=1.0,
     active_dims=nothing,
-    ARD=nothing,
     name=nothing
 )
-    out = Matern12(input_dim, variance, lengthscales, active_dims, ARD, name, nothing)
+    out = Matern12(variance, lengthscales, active_dims, name, nothing)
     instantiate!(out)
     return out
 end
@@ -568,22 +564,18 @@ function instantiate!(o::Union{Matern12, Nothing})
     if o === nothing return nothing end
     if typeof(o.o)<:PyObject return o.o end
     o.o = py_gpflow.kernels.Matern12(
-        o.input_dim;
         variance=o.variance,
         lengthscales=o.lengthscales,
         active_dims=o.active_dims,
-        ARD=o.ARD,
         name=o.name
     )
     return o.o
 end
 
 mutable struct Matern32 <: AbstractStationary
-    input_dim
     variance
     lengthscales
     active_dims
-    ARD
     name::Union{String, Nothing}
     o::Union{PyObject, Nothing}
 end
@@ -599,14 +591,12 @@ end
     σ² is the variance parameter.
 """
 function Matern32(
-    input_dim;
     variance=1.0,
     lengthscales=1.0,
     active_dims=nothing,
-    ARD=nothing,
     name=nothing
 )
-    out = Matern32(input_dim, variance, lengthscales, active_dims, ARD, name, nothing)
+    out = Matern32(variance, lengthscales, active_dims, name, nothing)
     instantiate!(out)
     return out
 end
@@ -615,11 +605,9 @@ function instantiate!(o::Union{Matern32, Nothing})
     if o === nothing return nothing end
     if typeof(o.o)<:PyObject return o.o end
     o.o = py_gpflow.kernels.Matern32(
-        o.input_dim;
         variance=o.variance,
         lengthscales=o.lengthscales,
         active_dims=o.active_dims,
-        ARD=o.ARD,
         name=o.name
     )
     return o.o
@@ -636,24 +624,20 @@ end
     σ² is the variance parameter.
 """
 mutable struct Matern52 <: AbstractStationary
-    input_dim
     variance
     lengthscales
     active_dims
-    ARD
     name::Union{String, Nothing}
     o::Union{PyObject, Nothing}
 end
 
 function Matern52(
-    input_dim;
     variance=1.0,
     lengthscales=1.0,
     active_dims=nothing,
-    ARD=nothing,
     name=nothing
 )
-    out = Matern52(input_dim, variance, lengthscales, active_dims, ARD, name, nothing)
+    out = Matern52(variance, lengthscales, active_dims, name, nothing)
     instantiate!(out)
     return out
 end
@@ -662,11 +646,9 @@ function instantiate!(o::Union{Matern52, Nothing})
     if o === nothing return nothing end
     if typeof(o.o)<:PyObject return o.o end
     o.o = py_gpflow.kernels.Matern52(
-        o.input_dim;
         variance=o.variance,
         lengthscales=o.lengthscales,
         active_dims=o.active_dims,
-        ARD=o.ARD,
         name=o.name
     )
     return o.o
@@ -678,18 +660,16 @@ end
     parameter is a variance, σ².
 """
 mutable struct Static <: AbstractStatic
-    input_dim
     variance
     active_dims
     o::Union{PyObject, Nothing}
 end
 
 function Static(
-    input_dim;
     variance=1.0,
     active_dims=nothing,
 )
-    out = Static(input_dim, variance, active_dims, nothing)
+    out = Static(variance, active_dims, nothing)
     instantiate!(out)
     return out
 end
@@ -698,7 +678,6 @@ function instantiate!(o::Union{Static, Nothing})
     if o === nothing return nothing end
     if typeof(o.o)<:PyObject return o.o end
     o.o = py_gpflow.kernels.Static(
-        o.input_dim;
         variance=o.variance,
         active_dims=o.active_dims,
     )

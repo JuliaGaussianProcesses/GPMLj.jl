@@ -40,24 +40,21 @@ end
 
        \\log p(\\mathbf y | \\mathbf f) = \\mathcal N(\\mathbf y | 0, \\mathbf K + \\sigma_n \\mathbf I)
 """
-mutable struct GPR{T1,T2} <: GPModel
-    X::T1
-    Y::T2
-    kern::Union{Kernel, Nothing}
+mutable struct GPR{T} <: GPModel
+    data::T
+    kernel::Union{Kernel, Nothing}
     mean_function::Union{AbstractMeanFunction, Nothing}
-    name::Union{String, Nothing}
-    likelihood::Union{AbstractLikelihood, Nothing}
+    noise_variance::Real
     o::Union{PyObject, Nothing}
 end
 
 function GPR(
-    X, 
-    Y, 
-    kern::Kernel; 
+    data::Tuple{AbstractArray, AbstractArray},
+    kernel::Kernel; 
     mean_function::Union{AbstractMeanFunction, Nothing}=nothing, 
-    name::Union{String, Nothing}=nothing
+    noise_variance::Real=1.0
 )
-    out = GPR(X, Y, kern, mean_function, name, nothing, nothing)
+    out = GPR(data, kernel, mean_function, noise_variance, nothing)
     instantiate!(out)
     return out
 end
@@ -65,9 +62,9 @@ end
 function instantiate!(o::Union{GPR, Nothing})
     if o === nothing return nothing end
     if typeof(o.o)<:PyObject return o.o end
-    kern_ = instantiate!(o.kern)
+    kernel_ = instantiate!(o.kernel)
     mean_function_ = instantiate!(o.mean_function)
-    o.o = py_gpflow.models.GPR(o.X, o.Y, kern_, mean_function_, o.name)
+    o.o = py_gpflow.models.GPR(o.data, kernel_, mean_function_, o.noise_variance)
     #= TODO: Shoudld we manually initialize likelihood?
     o.likelihood = likelihoods.Gaussian()
     o.likelihood.o = o.o.likelihood =#
@@ -147,25 +144,23 @@ end
        q(\\mathbf f) = N(\\mathbf f \\,|\\, \\boldsymbol \\mu, \\boldsymbol \\Sigma)
 
 """
-mutable struct VGP{T1,T2} <: GPModel
-    X::T1
-    Y::T2
-    kern::Union{Kernel, Nothing}
+mutable struct VGP{T} <: GPModel
+    data::T
+    kernel::Union{Kernel, Nothing}
     likelihood::Union{AbstractLikelihood, Nothing}
     mean_function::Union{AbstractMeanFunction, Nothing}
-    num_latent::Union{Int, Nothing}
+    num_latent_gps::Union{Int, Nothing}
     o::Union{PyObject, Nothing}
 end
 
 function VGP(
-    X, 
-    Y, 
-    kern::Union{Kernel, Nothing}, 
+    data::Tuple{AbstractArray, AbstractArray},
+    kernel::Union{Kernel, Nothing}, 
     likelihood::Union{AbstractLikelihood, Nothing};
     mean_function::Union{AbstractMeanFunction, Nothing}=nothing,
-    num_latent::Union{Int, Nothing}=nothing
+    num_latent_gps::Union{Int, Nothing}=nothing
 )
-    out = VGP(X, Y, kern, likelihood, mean_function, num_latent, nothing)
+    out = VGP(data, kernel, likelihood, mean_function, num_latent_gps, nothing)
     instantiate!(out)
     return out
 end    
@@ -173,13 +168,13 @@ end
 function instantiate!(o::VGP)
     if o === nothing return nothing end
     if typeof(o.o)<:PyObject return o.o end
-    kern_ = instantiate!(o.kern)
+    kernel_ = instantiate!(o.kernel)
     likelihood_ = instantiate!(o.likelihood)
     mean_function_ = instantiate!(o.mean_function)
     o.o = py_gpflow.models.VGP(
-        o.X, o.Y, kern=kern_, likelihood=likelihood_;
+        o.data, kernel=kernel_, likelihood=likelihood_;
         mean_function=mean_function_,
-        num_latent=o.num_latent
+        num_latent_gps=o.num_latent_gps
     )
     return o.o
 end
@@ -198,21 +193,20 @@ end
     }
 
 """
-mutable struct SVGP{T1,T2,T3,T4,T5,T6} <: GPModel
-    X::T1
-    Y::T2
+mutable struct SVGP{T1,T2,T3,T4,T5} <: GPModel
+    data::T1
     kern::Union{Kernel, Nothing}
     likelihood::Union{AbstractLikelihood, Nothing}
-    feat::T3
+    feat::T2
     mean_function::Union{AbstractMeanFunction, Nothing}
     num_latent::Union{Int, Nothing}
     q_diag::Bool
     whiten::Bool
     minibatch_size::Union{Int, Nothing}
-    Z::T4
+    Z::T3
     num_data::Union{Int, Nothing}
-    q_mu::T5
-    q_sqrt::T6
+    q_mu::T4
+    q_sqrt::T5
     o::Union{PyObject, Nothing}
 end
 
@@ -279,31 +273,28 @@ function instantiate!(o::SVGP)
     return o.o
 end
 
-mutable struct GPMC{T1,T2} <: GPModel
-    X::T1
-    Y::T2
-    kern::Union{Kernel, Nothing}
+mutable struct GPMC{T} <: GPModel
+    data::T
+    kernel::Union{Kernel, Nothing}
     likelihood::Union{AbstractLikelihood, Nothing}
     mean_function::Union{AbstractMeanFunction, Nothing}
-    num_latent::Union{Int, Nothing}
+    num_latent_gps::Union{Int, Nothing}
     o::Union{PyObject, Nothing}
 end
 
 function GPMC(  
-    X, 
-    Y, 
-    kern::Union{Kernel, Nothing}, 
+    data::Tuple{AbstractArray, AbstractArray},
+    kernel::Union{Kernel, Nothing}, 
     likelihood::Union{AbstractLikelihood, Nothing};
     mean_function::Union{AbstractMeanFunction, Nothing}=nothing, 
-    num_latent::Union{Int, Nothing}=nothing,
+    num_latent_gps::Union{Int, Nothing}=nothing,
 )
     out = GPMC( 
-        X,
-        Y,
-        kern,
+        data,
+        kernel,
         likelihood,
         mean_function,
-        num_latent,
+        num_latent_gps,
         nothing
     )
     instantiate!(out)
@@ -313,16 +304,15 @@ end
 function instantiate!(o::GPMC)
     if o === nothing return nothing end
     if typeof(o.o)<:PyObject return o.o end
-    kern_ = instantiate!(o.kern)
+    kernel_ = instantiate!(o.kernel)
     likelihood_ = instantiate!(o.likelihood)
     mean_function_ = instantiate!(o.mean_function)
     o.o = py_gpflow.models.GPMC(
-        o.X, 
-        o.Y, 
-        kern=kern_, 
+        o.data, 
+        kernel=kernel_, 
         likelihood=likelihood_;
         mean_function=mean_function_,
-        num_latent=o.num_latent                                
+        num_latent_gps=o.num_latent_gps                                
     )
     return o.o
 end

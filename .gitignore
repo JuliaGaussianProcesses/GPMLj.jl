@@ -3,7 +3,7 @@
 *.jl.mem
 deps/deps.jl
 *.png
-
+*.log
 .ipynb_checkpoints/
 
 Manifest.toml

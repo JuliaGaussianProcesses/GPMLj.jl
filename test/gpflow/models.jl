@@ -5,12 +5,12 @@ Random.seed!(123)
 
 @testset "Models" begin
     @testset "GPR" begin
-        kern= gpflow.kernels.Matern52(2)
-        gpr = gpflow.models.GPR(randn(100,2), randn(100,1), kern;)
+        kernel = gpflow.kernels.Matern52()
+        gpr = gpflow.models.GPR((randn(100,2), randn(100,1)), kernel)
         @test typeof(gpr)<:gpflow.models.GPR
         @test typeof(gpr)<:gpflow.Model
         @test typeof(gpr.o)<:PyObject
-        @test typeof(gpr.kern.o)<:PyObject
+        @test typeof(gpr.kernel.o)<:PyObject
 
     end
 
@@ -26,27 +26,25 @@ Random.seed!(123)
     end =#
     
     @testset "VGP" begin
-        kern = gpflow.kernels.Matern52(2)
+        kernel = gpflow.kernels.Matern52()
         like = gpflow.likelihoods.Gaussian()
-        vgp = gpflow.models.VGP(randn(100,2), randn(100,1), kern, like)
+        vgp = gpflow.models.VGP((randn(100,2), randn(100,1)), kernel, like)
         @test typeof(vgp)<:gpflow.models.VGP
         @test typeof(vgp)<:gpflow.Model
         @test typeof(vgp.o)<:PyObject
-        @test typeof(vgp.kern.o)<:PyObject
+        @test typeof(vgp.kernel.o)<:PyObject
         @test typeof(vgp.likelihood.o)<:PyObject
     end
 
     @testset "GPMC" begin
-        kern= gpflow.kernels.Matern52(2)
+        kernel = gpflow.kernels.Matern52()
         like = gpflow.likelihoods.Gaussian()
-        gpmc = gpflow.models.GPMC(randn(100,2), randn(100,1), kern, like)
+        gpmc = gpflow.models.GPMC((randn(100,2), randn(100,1)), kernel, like)
         @test typeof(gpmc)<:gpflow.models.GPMC
         @test typeof(gpmc)<:gpflow.Model
         @test typeof(gpmc.o)<:PyObject
-        @test typeof(gpmc.kern.o)<:PyObject
+        @test typeof(gpmc.kernel.o)<:PyObject
         @test typeof(gpmc.likelihood.o)<:PyObject
-    end
-
-    
+    end 
 
 end #module
